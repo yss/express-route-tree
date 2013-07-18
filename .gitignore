@@ -1,0 +1,16 @@
+*.[oa]
+*.pyc
+*.swp
+*.swn
+*.swo
+*.bin
+*.config
+*.psd
+*.bak
+.DS_Store
+.project
+.buildpath
+.settings
+.reviewboardrc
+node_modules/
+.idea/
