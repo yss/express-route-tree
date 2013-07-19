@@ -10,12 +10,12 @@ function isDirectory(filepath) {
         return fs.statSync(filepath).isDirectory();
     }
 }
-function initController(dirname) {
+function initController(controller, dirname) {
     fs.readdirSync(dirname).forEach(function(item) {
         var filepath = path.join(dirname, item);
         if (isDirectory(filepath)) {
             controller[item] = {};
-            initController(controlleontrollerr[item], filepath);
+            initController(controller[item], filepath);
         } else if (/\.js$/.test(item)) {
             controller[item.slice(0, -3)] = require(filepath);
             console.log('Loading:', filepath);
@@ -33,7 +33,7 @@ exports.controller = controller;
  * @return {Function}
  */
 module.exports = function(dirname, fileRouter) {
-    initController(dirname);
+    initController(controller, dirname);
     return function(req, res, next) {
         var pathArr = req.path.substring(1).split('/'),
             app = controller,
