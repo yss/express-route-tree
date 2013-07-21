@@ -23,17 +23,15 @@ function initController(controller, dirname) {
     });
 }
 
-// to get the original controller object
-exports.controller = controller;
-
 /**
  * express-route-tree
  * @param {String} dirname
- * @param {Array} fileRouter
+ * @param [Function] routeFilter
  * @return {Function}
  */
-module.exports = function(dirname, fileRouter) {
+function Route(dirname, routeFilter) {
     initController(controller, dirname);
+    Object.seal(controller);
     return function(req, res, next) {
         var pathArr = req.path.substring(1).split('/'),
             app = controller,
@@ -41,8 +39,8 @@ module.exports = function(dirname, fileRouter) {
             method;
 
         if (pathArr[0] && !app[pathArr[0]]) {
-            if (fileRouter && fileRouter.indexOf(pathArr[0]) !== -1) {
-                return res.sendfile(pathArr[0], { maxAge: _config.maxAge });
+            if (routeFilter) {
+                return routeFilter(req, res, next, app);
             } else {
                 return next('unknow route.');
             }
@@ -69,3 +67,7 @@ module.exports = function(dirname, fileRouter) {
     };
 };
 
+// to get the original controller object
+Route.controller = controller;
+
+module.exports = Route;

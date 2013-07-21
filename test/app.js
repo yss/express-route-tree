@@ -14,4 +14,6 @@ app.use(function(err, req, res, next) {
     res.end();
 });
 
+console.log(route.controller);
+
 app.listen(3000);

@@ -1,4 +1,4 @@
-exports.index = function(req, res, next, page) {
-    res.send('this is app list page. And the page number is ' +  (page || 0));
+exports.index = function(req, res, next) {
+    res.send('The params are:' + Array.prototype.slice.call(arguments, 3));
     res.end();
 };
