@@ -37,15 +37,46 @@ app.use(route(__dirname + '/controller', function(req, res, next, controller) {
 // File: controller/app/list.js
 
 /**
- * Support urls:
+ * Normal Get Request, Support urls:
  * 1. /app/list => page: undefined | second: undefind
  * 2. /app/list/0 => page: 0 | second: undefined
  * 3. /app/list/1.html => page: 1 | second: undefined
  * 4. /app/list/1/a => page: 1 | second: a
  */
-export.index = function(req, res, next, page, second) {
+exports.index = function(req, res, next, page, second) {
     res.send('Page: ' + page + ' Second: ' + second);
     res.end();
 };
+
+/**
+ * @Caution:
+ *  if you want to use index with other(not get) request method.
+ *  you must use full path: /app/list/index/1/a
+ *  otherwise, request will be transfered to index function.
+ */
+
+/**
+ * For POST Request. Support urls:
+ * 1. /app/list/set => page: undefined | second: undefind
+ * 2. /app/list/set/0 => page: 0 | second: undefined
+ * 3. /app/list/set/1 => page: 1 | second: undefined
+ * 4. /app/list/set/1/a => page: 1 | second: a
+ */
+exports.postSet = function(req, res, next, page, second) {
+    res.send('Page: ' + page + ' Second: ' + second);
+    res.end();
+}
+
+/**
+ * For PUT Request. Support urls:
+ * 1. /app/list/setapp => page: undefined | second: undefind
+ * 2. /app/list/setapp/0 => page: 0 | second: undefined
+ * 3. /app/list/setapp/1 => page: 1 | second: undefined
+ * 4. /app/list/setapp/1/a => page: 1 | second: a
+ */
+exports.putSetapp = function(req, res, next, page, second) {
+    res.send('Page: ' + page + ' Second: ' + second);
+    res.end();
+}
 
 ```
