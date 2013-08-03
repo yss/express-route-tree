@@ -5,6 +5,7 @@ express-route-tree can provided a very convenient and quickly way to create rout
 2. Restful mode
 3. In index function and path not include 'index', the first 'xx.html' paramter will be parsed to 'xx' for SEO requirement.
 ## Usage
+
 ```js
 // File: app.js
 
@@ -32,7 +33,9 @@ app.use(route(__dirname + '/controller', function(req, res, next, controller) {
 
 // try it:
 // console.log(route.controller);
+
 ```
+
 ```js
 // File: controller/app/list.js
 
@@ -79,4 +82,10 @@ exports.putSetapp = function(req, res, next, page, second) {
     res.end();
 }
 
+// And also support any method from request header.
+// like: exports.deleteApp = function(req, res, next, ...) { ... }
+
 ```
+
+## The End
+Anyway, try to use. And see the example in test directory.
