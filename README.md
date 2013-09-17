@@ -1,9 +1,11 @@
 ## express-route-tree
 express-route-tree can provided a very convenient and quickly way to create routes for the express application. Let's see it.
+
 ## Features
 1. Auto route without configuration
 2. Restful mode
 3. In index function and path not include 'index', the first 'xx.html' paramter will be parsed to 'xx' for SEO requirement.
+
 ## Usage
 
 ```js
@@ -11,7 +13,7 @@ express-route-tree can provided a very convenient and quickly way to create rout
 
 var express = require('express'),
     app = express(),
-    route = require('../route.js');
+    route = require('express-route-tree');
 
 app.use(express.logger());
 app.use(route(__dirname + '/controller'));
@@ -89,3 +91,7 @@ exports.putSetapp = function(req, res, next, page, second) {
 
 ## The End
 Anyway, try to use. And see the example in test directory.
+
+Hope this is useful to you.
+
+And give me your pull request.
