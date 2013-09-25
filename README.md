@@ -1,9 +1,12 @@
 ## express-route-tree
 express-route-tree can provided a very convenient and quickly way to create routes for the express application. Let's see it.
 
+## Install
+`npm install express-route-tree`
+
 ## Features
-1. Auto route without configuration
-2. Restful mode
+1. Auto route without a large configuration file.
+2. Restful mode.
 3. In index function and path not include 'index', the first 'xx.html' paramter will be parsed to 'xx' for SEO requirement.
 
 ## Usage
@@ -19,14 +22,17 @@ app.use(express.logger());
 app.use(route(__dirname + '/controller'));
 /*
 var fileRouter = ['robots.txt'],
-    shortAddress = ['mon', 'tus'];
+    shortAddress = ['mon', 'tus'],
+    regionRoute = { china: { id: '1', name: '中国' } };
 app.use(route(__dirname + '/controller', function(req, res, next, controller) {
     var pathname = req.path.substring(1);
     if (~fileRouter.indexOf(pathname)) {
         return res.sendFile(pathname, { maxAge: 3600 * 24 * 1000 });
-    } else if (shortAddress.indexOf(pathname)) {
+    } else if (~shortAddress.indexOf(pathname))) {
         // some short address
-        return controller.season.index(req, res, next, shortAddress.indexOf(pathname) + 1);
+        return controller.index.season(req, res, next, shortAddress[pathname] + 1);
+    } else if (regionRoute[pathname]) {
+        return controller.index.region(req, res, next, regionRoute[pathname].id, regionRoute[pathname].name);
     } else {
         return next('No such route.');
     }
@@ -58,6 +64,9 @@ exports.index = function(req, res, next, page, second) {
  *  if you want to use index with other(not get) request method.
  *  you must use full path: /app/list/index/1/a
  *  otherwise, request will be transfered to index function.
+ *  Also, if there is not matched function, such as '/app/test'(no `exports.test = function(){}` in app.js),
+ *  Then, router will send this request to `app.index` function,
+ *  And put the `test` as the four argument, like `function(req, res, next, test)`
  */
 
 /**
