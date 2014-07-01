@@ -1,13 +1,17 @@
 ## express-route-tree
-express-route-tree can provided a very convenient and quickly way to create routes for the express application. Let's see it.
+express-route-tree can provided a very convenient and quickly way to create routes for the express application.
+
+Let's see it.
 
 ## Install
 `npm install express-route-tree`
 
 ## Features
+
 1. Auto route without a large configuration file.
-2. Restful mode.
+2. Restful mode. Every path may be a parameter, if you want.
 3. In index function and path not include 'index', the first 'xx.html' paramter will be parsed to 'xx' for SEO requirement.
+4. support express 3.x and 4.x
 
 ## Usage
 
@@ -18,9 +22,9 @@ var express = require('express'),
     app = express(),
     route = require('express-route-tree');
 
-app.use(express.logger());
 app.use(route(__dirname + '/controller'));
 /*
+// Advanced Settings
 var fileRouter = ['robots.txt'],
     shortAddress = ['mon', 'tus'],
     regionRoute = { china: { id: '1', name: '中国' } };
