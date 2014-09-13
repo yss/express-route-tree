@@ -16,7 +16,7 @@ function initController(controller, dirname) {
         if (isDirectory(filepath)) {
             controller[item] = {};
             initController(controller[item], filepath);
-        } else if (/\.js$/.test(item)) {
+        } else if (/\.js$/.test(item) && item.indexOf('.') !== 0) { // js file and not hidden file
             controller[item.slice(0, -3)] = require(filepath);
             console.log('Loading:', filepath);
         }
@@ -26,11 +26,12 @@ function initController(controller, dirname) {
 /**
  * express-route-tree
  * @param {String} dirname
- * @param [Function] routeFilter
+ * @param [Function] unknowRouteHandle
  * @return {Function}
  */
-function Route(dirname, routeFilter) {
+function Route(dirname, unknowRouteHandle) {
     initController(controller, dirname);
+    // prevent the controller object to be modified.
     Object.seal(controller);
     return function(req, res, next) {
         var pathArr = req.path.substring(1).split('/'),
@@ -39,8 +40,8 @@ function Route(dirname, routeFilter) {
             method;
 
         if (pathArr[0] && !app[pathArr[0]]) {
-            if (routeFilter) {
-                return routeFilter(req, res, next, app);
+            if (unknowRouteHandle) {
+                return unknowRouteHandle(req, res, next, controller);
             } else {
                 return next('unknow route.');
             }
@@ -58,9 +59,11 @@ function Route(dirname, routeFilter) {
             if (typeof app[method] === 'function') {
                 pathArr.unshift(req, res, next);
                 app[method].apply(null, pathArr);
-            } else {
+            } else if (app.index.length > 3) { // the index function must contains more than 3 arguments
                 pathArr.unshift(req, res, next, method.replace('.html', ''));
                 app.index.apply(null, pathArr);
+            } else {
+                return next('unknow route.');
             }
             break;
         }

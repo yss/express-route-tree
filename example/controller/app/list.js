@@ -20,4 +20,8 @@ exports.index = function(req, res, next, page, second) {
 exports.postSet = function(req, res, next, page, second) {
     res.send('Page: ' + page + ' Second: ' + second);
     res.end();
-}
+};
+exports.putSet = function(req, res, next, page, second) {
+    res.send('Page: ' + page + ' Second: ' + second);
+    res.end();
+};

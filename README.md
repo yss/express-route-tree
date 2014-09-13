@@ -13,6 +13,10 @@ Let's see it.
 3. In index function and path not include 'index', the first 'xx.html' paramter will be parsed to 'xx' for SEO requirement.
 4. support express 3.x and 4.x
 
+## Update
+
+1. There will be not come to the default index function when route not find corresponding function, if the index function have not more than 3 arguments.[new in 4.1.0]
+
 ## Usage
 
 ```js
@@ -101,6 +105,14 @@ exports.putSetapp = function(req, res, next, page, second) {
 // like: exports.deleteApp = function(req, res, next, ...) { ... }
 
 ```
+
+## Test
+
+```sh
+mocha
+# or
+npm test # npm run-script test
+``
 
 ## The End
 Anyway, try to use. And see the example in test directory.

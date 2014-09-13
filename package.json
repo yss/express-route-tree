@@ -1,7 +1,7 @@
 {
     "name": "express-route-tree",
-    "description": "Resetful routing for express with lightly and structured.",
-    "version": "4.0.0",
+    "description": "Make router freedom by your finger. Resetful routing for express with lightly and structured.",
+    "version": "4.1.0",
     "homepage": "https://github.com/yss/express-route-tree",
     "main": "route.js",
     "author": {
@@ -9,7 +9,10 @@
         "email": "yss.nelson@gmail.com"
     },
     "devDependencies": {
-        "express": "3.x"
+        "express": "4.x"
+    },
+    "scripts": {
+        "test": "mocha"
     },
     "keywords": [
         "express",
