@@ -37,6 +37,7 @@ function Route(dirname, unknowRouteHandle) {
         var pathArr = req.path.substring(1).split('/'),
             app = controller,
             isGet = req.method === 'GET',
+            path,
             method;
 
         if (pathArr[0] && !app[pathArr[0]]) {
@@ -47,23 +48,24 @@ function Route(dirname, unknowRouteHandle) {
             }
         }
         while (true) {
-            // method == "0"
-            method = pathArr.shift() || 'index';
-            if (typeof app[method] === 'object') {
-                app = app[method];
+            // path== "0"
+            path = pathArr.shift() || 'index';
+            if (typeof app[path] === 'object') {
+                app = app[path];
                 continue;
             }
-            if (!isGet) {
-                method = req.method.toLowerCase() + method.substring(0, 1).toUpperCase() + method.substring(1);
-            }
+            method = isGet ? path : req.method.toLowerCase() + path.substring(0, 1).toUpperCase() + path.substring(1);
             if (typeof app[method] === 'function') {
                 pathArr.unshift(req, res, next);
                 app[method].apply(null, pathArr);
-            } else if (app.index.length > 3) { // the index function must contains more than 3 arguments
-                pathArr.unshift(req, res, next, method.replace('.html', ''));
-                app.index.apply(null, pathArr);
             } else {
-                return next('unknow route.');
+                pathArr.unshift(req, res, next, path.replace('.html', ''));
+                method = isGet ? 'index' : req.method.toLowerCase() + 'Index';
+                if (typeof app[method] === 'function' && app[method].length > 3) { // the index function must contains more than 3 arguments
+                    app[method].apply(null, pathArr);
+                } else {
+                    next('unknow route.');
+                }
             }
             break;
         }

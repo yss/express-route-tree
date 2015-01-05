@@ -44,6 +44,40 @@ describe('express-route-tree', function() {
         });
     });
 
+    describe('HTTP PUT /index/id', function() {
+        it('Should be return id.', function(done) {
+            simulator({
+                req: {
+                    method: 'PUT',
+                    path: '/index/id'
+                },
+                res: {
+                    send: function(str) {
+                        str.should.equal('id');
+                        done();
+                    }
+                }
+            });
+        });
+    });
+
+    describe('HTTP DELETE /index/id', function() {
+        it('Should be return id.', function(done) {
+            simulator({
+                req: {
+                    method: 'DELETE',
+                    path: '/index/id'
+                },
+                res: {
+                    send: function(str) {
+                        str.should.equal('id');
+                        done();
+                    }
+                }
+            });
+        });
+    });
+
     describe('HTTP GET /app/list', function() {
         it('Should be send a String with Page: undefined Second: undefined', function(done) {
             simulator({
