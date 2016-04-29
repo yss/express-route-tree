@@ -11,13 +11,32 @@ function noop(){}
 function simulator(obj) {
     var Router = require('../route.js');
     obj = obj || {};
-    Router(controllerDirname, obj.unknowRouteHandle)(
+    Router(controllerDirname, obj.alias, obj.unknowRouteHandle)(
         mix({path: '/', method: 'GET'}, obj.req || {}),
         mix({send: noop, end: noop}, obj.res),
         obj.next || noop
     );
 }
 describe('express-route-tree', function() {
+    describe('Test alias feature', function() {
+        it('Should be the same with GET /app/list/1/a', function(done) {
+            simulator({
+                req: {
+                    path: '/app/list/1/a'
+                },
+                alias: {
+                    test: 'app.list'
+                },
+                res: {
+                    send: function(str) {
+                        str.should.equal('Page: 1 Second: a');
+                        done();
+                    }
+                }
+            });
+        });
+    });
+
     describe('HTTP GET /', function() {
         it('Should be return a welcome string.', function(done) {
             simulator({

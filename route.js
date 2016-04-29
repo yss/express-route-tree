@@ -10,6 +10,7 @@ function isDirectory(filepath) {
         return fs.statSync(filepath).isDirectory();
     }
 }
+
 function initController(controller, dirname) {
     fs.readdirSync(dirname).forEach(function(item) {
         var filepath = path.join(dirname, item);
@@ -23,14 +24,42 @@ function initController(controller, dirname) {
     });
 }
 
+function addAlias(alias, controller) {
+    if (!alias || typeof alias !== 'object') {
+        return;
+    }
+
+    Object.keys(alias).forEach(function(key) {
+        var fn = controller;
+        if (controller.hasOwnProperty(key)) {
+            throw new Error('The key `' + key + '` is exists, and can not be replaced.');
+        }
+        alias[key].split('.').forEach(function(method) {
+            fn = fn[method];
+        });
+        if (typeof fn !== 'function' && typeof fn !== 'object') {
+            throw new Error('Alias value must be a function or object.');
+        }
+
+        controller[key] = fn;
+    });
+}
+
+
 /**
  * express-route-tree
  * @param {String} dirname
- * @param [Function] unknowRouteHandle
+ * @param {Object} [alias]
+ * @param {Function} [unknowRouteHandle]
  * @return {Function}
  */
-function Route(dirname, unknowRouteHandle) {
+function Route(dirname, alias, unknowRouteHandle) {
+    if (typeof alias === 'function') {
+        unknowRouteHandle = alias;
+        alias = null;
+    }
     initController(controller, dirname);
+    addAlias(alias, controller);
     // prevent the controller object to be modified.
     Object.seal(controller);
     return function(req, res, next) {

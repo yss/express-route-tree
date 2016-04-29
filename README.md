@@ -16,6 +16,15 @@ Let's see it.
 ## Update
 
 1. There will be not come to the default index function when route not find corresponding function, if the index function have not more than 3 arguments.[new in 4.1.0]
+2. Add alias feature. [new in 4.3.0].
+
+## Class
+
+`route(controllerDirectory[, alias][, unknowRouteHandler]`
+
+* `controllerDirectory` is a string of controller directory.
+* `alias` is a object for alias to a path or function.
+* `unknowRouteHandler` is a function to handler the unknow route.
 
 ## Usage
 
@@ -32,7 +41,7 @@ app.use(route(__dirname + '/controller'));
 var fileRouter = ['robots.txt'],
     shortAddress = ['mon', 'tus'],
     regionRoute = { china: { id: '1', name: '中国' } };
-app.use(route(__dirname + '/controller', function(req, res, next, controller) {
+app.use(route(__dirname + '/controller', { season: 'index.season' }, function(req, res, next, controller) {
     var pathname = req.path.substring(1);
     if (~fileRouter.indexOf(pathname)) {
         return res.sendFile(pathname, { maxAge: 3600 * 24 * 1000 });
@@ -46,6 +55,9 @@ app.use(route(__dirname + '/controller', function(req, res, next, controller) {
     }
 });
 */
+
+// Add alias: `{ season: 'index.season' }`, and
+// GET /index/season/2 is equivalent to GET /season/2
 
 // try it:
 // console.log(route.controller);
