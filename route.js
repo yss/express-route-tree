@@ -31,9 +31,6 @@ function addAlias(alias, controller) {
 
     Object.keys(alias).forEach(function(key) {
         var fn = controller;
-        if (controller.hasOwnProperty(key)) {
-            throw new Error('The key `' + key + '` is exists, and can not be replaced.');
-        }
         alias[key].split('.').forEach(function(method) {
             fn = fn[method];
         });
@@ -41,10 +38,26 @@ function addAlias(alias, controller) {
             throw new Error('Alias value must be a function or object.');
         }
 
-        controller[key] = fn;
+        var aliasController = controller,
+            keyArr = key.split('.');
+
+        key = keyArr.pop();
+
+        keyArr.forEach(function(method) {
+            aliasController = aliasController[method] = aliasController[method] || {};
+        });
+
+        aliasController[key] = fn;
     });
 }
 
+var METHODS = 'post,put,delete'.split(','), // specially for get and head
+    TYPE_FUNCTION = 'function',
+    TYPE_OBJECT = 'object',
+    METHOD_GET = 'GET',
+    METHOD_HEAD = 'HEAD',
+    METHOD_OPTIONS = 'OPTIONS',
+    DEFAULT_PATH = 'index';
 
 /**
  * express-route-tree
@@ -54,7 +67,7 @@ function addAlias(alias, controller) {
  * @return {Function}
  */
 function Route(dirname, alias, unknowRouteHandle) {
-    if (typeof alias === 'function') {
+    if (typeof alias === TYPE_FUNCTION) {
         unknowRouteHandle = alias;
         alias = null;
     }
@@ -65,7 +78,8 @@ function Route(dirname, alias, unknowRouteHandle) {
     return function(req, res, next) {
         var pathArr = req.path.substring(1).split('/'),
             app = controller,
-            isGet = req.method === 'GET',
+            reqMethod = req.method,
+            isGet = reqMethod === METHOD_GET,
             path,
             method;
 
@@ -73,32 +87,81 @@ function Route(dirname, alias, unknowRouteHandle) {
             if (unknowRouteHandle) {
                 return unknowRouteHandle(req, res, next, controller);
             } else {
-                return next('unknow route.');
+                return next('route not found.');
             }
         }
         while (true) {
             // path== "0"
-            path = pathArr.shift() || 'index';
-            if (typeof app[path] === 'object') {
+            path = pathArr.shift() || DEFAULT_PATH;
+            if (typeof app[path] === TYPE_OBJECT) {
                 app = app[path];
                 continue;
             }
-            method = isGet ? path : req.method.toLowerCase() + path.substring(0, 1).toUpperCase() + path.substring(1);
-            if (typeof app[method] === 'function') {
+            if (reqMethod === METHOD_HEAD) {
+                Route.headRequestHandle(req, res, app, path);
+                break;
+            }
+            if (reqMethod === METHOD_OPTIONS) {
+                Route.optionsRequestHandle(req, res, app, path);
+                break;
+            }
+            method = isGet ? path : reqMethod.toLowerCase() + path.substring(0, 1).toUpperCase() + path.substring(1);
+            if (typeof app[method] === TYPE_FUNCTION) {
                 pathArr.unshift(req, res, next);
                 app[method].apply(null, pathArr);
             } else {
                 pathArr.unshift(req, res, next, path.replace('.html', ''));
-                method = isGet ? 'index' : req.method.toLowerCase() + 'Index';
-                if (typeof app[method] === 'function' && app[method].length > 3) { // the index function must contains more than 3 arguments
+                method = isGet ? DEFAULT_PATH : reqMethod.toLowerCase() + 'Index';
+                if (typeof app[method] === TYPE_FUNCTION && app[method].length > 3) { // the index function must contains more than 3 arguments
                     app[method].apply(null, pathArr);
                 } else {
-                    next('unknow route.');
+                    next('route not found.');
                 }
             }
             break;
         }
     };
+}
+
+/**
+ *
+ * @param req
+ * @param res
+ * @param {Object} app the last controller object
+ * @param {String} path
+ */
+Route.optionsRequestHandle = function(req, res, app, path) {
+    var methods = [];
+
+    if (typeof app[path] === TYPE_FUNCTION || typeof app.index === TYPE_FUNCTION) {
+        methods.push(METHOD_HEAD, METHOD_GET);
+    }
+
+    METHODS.forEach(function(method) {
+        if (typeof app[method + path.substring(0, 1).toUpperCase() + path.substring(1)] === TYPE_FUNCTION
+            || typeof app[method + 'Index'] === TYPE_FUNCTION) {
+            methods.push(method.toUpperCase());
+        }
+    });
+
+    res.send(methods.join(','));
+    res.end();
+};
+
+/**
+ *
+ * @param req
+ * @param res
+ * @param {Object} app the last controller object
+ * @param {String} method
+ */
+Route.headRequestHandle = function(req, res, app, method) {
+    if (typeof app[method] === TYPE_FUNCTION || typeof app.index === TYPE_FUNCTION) {
+        res.status(200);
+    } else {
+        res.status(404);
+    }
+    res.end();
 };
 
 // to get the original controller object

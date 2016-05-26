@@ -13,19 +13,21 @@ function simulator(obj) {
     obj = obj || {};
     Router(controllerDirname, obj.alias, obj.unknowRouteHandle)(
         mix({path: '/', method: 'GET'}, obj.req || {}),
-        mix({send: noop, end: noop}, obj.res),
+        mix({send: noop, end: noop, status: noop}, obj.res),
         obj.next || noop
     );
 }
+
 describe('express-route-tree', function() {
     describe('Test alias feature', function() {
-        it('Should be the same with GET /app/list/1/a', function(done) {
+        it('GET /test/1/a should be the same with GET /app/list/1/a', function(done) {
             simulator({
                 req: {
-                    path: '/app/list/1/a'
+                    path: '/test/1/a'
                 },
                 alias: {
-                    test: 'app.list'
+                    test: 'app.list',
+                    'a.b': 'app.list'
                 },
                 res: {
                     send: function(str) {
@@ -34,6 +36,85 @@ describe('express-route-tree', function() {
                     }
                 }
             });
+        });
+        it('GET /a/b/1/a should be the same with GET /app/list/1/a', function(done) {
+            simulator({
+                req: {
+                    path: '/a/b/1/a'
+                },
+                alias: {
+                    test: 'app.list',
+                    'a.b': 'app.list'
+                },
+                res: {
+                    send: function(str) {
+                        str.should.equal('Page: 1 Second: a');
+                        done();
+                    }
+                }
+            });
+        });
+    });
+
+    describe('Test head request', function() {
+        it('Status should be 200', function(done) {
+            simulator({
+                req: {
+                    method: 'HEAD',
+                    path: '/'
+                },
+                res: {
+                    status: function(code) {
+                        code.should.equal(200);
+                        done();
+                    }
+                }
+            })
+        });
+        it('Status should be 404', function(done) {
+            simulator({
+                req: {
+                    method: 'HEAD',
+                    path: '/app'
+                },
+                res: {
+                    status: function(code) {
+                        code.should.equal(404);
+                        done();
+                    }
+                }
+            })
+        });
+    });
+
+    describe('Test options request', function() {
+        it('OPTIONS /app/index should be return with HEAD,GET', function(done) {
+            simulator({
+                req: {
+                    method: 'OPTIONS',
+                    path: '/app/list'
+                },
+                res: {
+                    send: function(str) {
+                        str.should.equal('HEAD,GET');
+                        done();
+                    }
+                }
+            })
+        });
+        it('OPTIONS / should be return with HEAD,GET,PUT,DELETE', function(done) {
+            simulator({
+                req: {
+                    method: 'OPTIONS',
+                    path: '/'
+                },
+                res: {
+                    send: function(str) {
+                        str.should.equal('HEAD,GET,PUT,DELETE');
+                        done();
+                    }
+                }
+            })
         });
     });
 
@@ -234,7 +315,7 @@ describe('express-route-tree', function() {
                     path: '/index/xx'
                 },
                 next: function(str) {
-                    str.should.equal('unknow route.');
+                    str.should.equal('route not found.');
                     done();
                 }
             });

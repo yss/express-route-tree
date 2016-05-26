@@ -59,6 +59,9 @@ app.use(route(__dirname + '/controller', { season: 'index.season' }, function(re
 // Add alias: `{ season: 'index.season' }`, and
 // GET /index/season/2 is equivalent to GET /season/2
 
+// Add alias: `{ 'a.b': 'index.season' }`, and
+// GET /index/season/2 is equivalent to GET /a/b/2
+
 // try it:
 // console.log(route.controller);
 
