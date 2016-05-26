@@ -42,10 +42,6 @@ describe('express-route-tree', function() {
                 req: {
                     path: '/a/b/1/a'
                 },
-                alias: {
-                    test: 'app.list',
-                    'a.b': 'app.list'
-                },
                 res: {
                     send: function(str) {
                         str.should.equal('Page: 1 Second: a');

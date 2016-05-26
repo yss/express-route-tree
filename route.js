@@ -47,6 +47,10 @@ function addAlias(alias, controller) {
             aliasController = aliasController[method] = aliasController[method] || {};
         });
 
+        if (aliasController.hasOwnProperty(key)) {
+            throw new Error('The key `' + key + '` is exists, and can not be replaced.');
+        }
+
         aliasController[key] = fn;
     });
 }
@@ -124,7 +128,7 @@ function Route(dirname, alias, unknowRouteHandle) {
 }
 
 /**
- *
+ * for OPTIONS /
  * @param req
  * @param res
  * @param {Object} app the last controller object
@@ -149,7 +153,7 @@ Route.optionsRequestHandle = function(req, res, app, path) {
 };
 
 /**
- *
+ * for HEAD /
  * @param req
  * @param res
  * @param {Object} app the last controller object
