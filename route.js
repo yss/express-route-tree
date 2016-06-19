@@ -55,7 +55,7 @@ function addAlias(alias, controller) {
     });
 }
 
-var METHODS = 'post,put,delete'.split(','), // specially for get and head
+var METHODS = 'post,put,patch,delete'.split(','), // specially for get and head
     TYPE_FUNCTION = 'function',
     TYPE_OBJECT = 'object',
     METHOD_GET = 'GET',
