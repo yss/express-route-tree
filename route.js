@@ -3,8 +3,6 @@
 var fs = require('fs'),
     path = require('path');
 
-var controller = {};
-
 function isDirectory(filepath) {
     if (fs.existsSync(filepath)) {
         return fs.statSync(filepath).isDirectory();
@@ -61,7 +59,7 @@ var METHODS = 'post,put,patch,delete'.split(','), // specially for get and head
     METHOD_GET = 'GET',
     METHOD_HEAD = 'HEAD',
     METHOD_OPTIONS = 'OPTIONS',
-    DEFAULT_PATH = 'index';
+    PATH_DEFAULT = 'index';
 
 /**
  * express-route-tree
@@ -71,6 +69,7 @@ var METHODS = 'post,put,patch,delete'.split(','), // specially for get and head
  * @return {Function}
  */
 function Route(dirname, alias, unknowRouteHandle) {
+    var controller = {};
     if (typeof alias === TYPE_FUNCTION) {
         unknowRouteHandle = alias;
         alias = null;
@@ -79,7 +78,7 @@ function Route(dirname, alias, unknowRouteHandle) {
     addAlias(alias, controller);
     // prevent the controller object to be modified.
     Object.seal(controller);
-    return function(req, res, next) {
+    var middleware = function(req, res, next) {
         var pathArr = req.path.substring(1).split('/'),
             app = controller,
             reqMethod = req.method,
@@ -91,12 +90,12 @@ function Route(dirname, alias, unknowRouteHandle) {
             if (unknowRouteHandle) {
                 return unknowRouteHandle(req, res, next, controller);
             } else {
-                return next('route not found.');
+                return next('ROUTE_NOT_FOUND');
             }
         }
         while (true) {
             // path== "0"
-            path = pathArr.shift() || DEFAULT_PATH;
+            path = pathArr.shift() || PATH_DEFAULT;
             if (typeof app[path] === TYPE_OBJECT) {
                 app = app[path];
                 continue;
@@ -115,16 +114,20 @@ function Route(dirname, alias, unknowRouteHandle) {
                 app[method].apply(null, pathArr);
             } else {
                 pathArr.unshift(req, res, next, path.replace('.html', ''));
-                method = isGet ? DEFAULT_PATH : reqMethod.toLowerCase() + 'Index';
+                method = isGet ? PATH_DEFAULT : reqMethod.toLowerCase() + 'Index';
                 if (typeof app[method] === TYPE_FUNCTION && app[method].length > 3) { // the index function must contains more than 3 arguments
                     app[method].apply(null, pathArr);
                 } else {
-                    next('route not found.');
+                    next('ROUTE_NOT_FOUND');
                 }
             }
             break;
         }
     };
+
+    middleware.controller = controller;
+
+    return middleware;
 }
 
 /**
@@ -167,8 +170,5 @@ Route.headRequestHandle = function(req, res, app, method) {
     }
     res.end();
 };
-
-// to get the original controller object
-Route.controller = controller;
 
 module.exports = Route;

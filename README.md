@@ -10,13 +10,13 @@ Let's see it.
 
 1. Auto route without a large configuration file.
 2. Restful mode. Every path may be a parameter, if you want.
-3. In index function and path not include 'index', the first 'xx.html' paramter will be parsed to 'xx' for SEO requirement.
+3. In index function and path not include 'index', the first 'xx.html' parameter will be parsed to 'xx' for SEO requirement.
 4. support express 3.x and 4.x
 
 ## Update
 
 1. There will be not come to the default index function when route not find corresponding function, if the index function have not more than 3 arguments.[new in 4.1.0]
-2. Add alias feature. [new in 4.3.0].
+2. Add alias feature. [new in 4.3.0]
 
 ## Class
 
@@ -135,4 +135,4 @@ Anyway, try to use. And see the example in test directory.
 
 Hope this is useful to you.
 
-And give me your pull request if you have any improvements or suggestions
+And give me your pull request if you have any improvements or suggestions.
