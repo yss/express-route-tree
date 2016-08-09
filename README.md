@@ -1,5 +1,6 @@
 ## express-route-tree
-express-route-tree can provided a very convenient and quickly way to create routes for the express application.
+    Path is route.
+    This route can provided a very convenient and quickly way to create routes for the express application.
 
 Let's see it.
 
@@ -11,7 +12,8 @@ Let's see it.
 1. Auto route without a large configuration file.
 2. Restful mode. Every path may be a parameter, if you want.
 3. In index function and path not include 'index', the first 'xx.html' parameter will be parsed to 'xx' for SEO requirement.
-4. support express 3.x and 4.x
+4. Support express 3.x and 4.x
+5. Alias where ever you want.
 
 ## Update
 
@@ -41,7 +43,10 @@ app.use(route(__dirname + '/controller'));
 var fileRouter = ['robots.txt'],
     shortAddress = ['mon', 'tus'],
     regionRoute = { china: { id: '1', name: '中国' } };
-app.use(route(__dirname + '/controller', { season: 'index.season' }, function(req, res, next, controller) {
+app.use(route(__dirname + '/controller', {
+    season: '/index/season', // GET /season === GET /index/season
+    '/a/b': '/index/season'  // GET /a/b === GET /index/season
+}, function(req, res, next, controller) {
     var pathname = req.path.substring(1);
     if (~fileRouter.indexOf(pathname)) {
         return res.sendFile(pathname, { maxAge: 3600 * 24 * 1000 });
@@ -59,7 +64,7 @@ app.use(route(__dirname + '/controller', { season: 'index.season' }, function(re
 // Add alias: `{ season: 'index.season' }`, and
 // GET /index/season/2 is equivalent to GET /season/2
 
-// Add alias: `{ 'a.b': 'index.season' }`, and
+// Add alias: `{ '/a/b': '/index/season' }`, and
 // GET /index/season/2 is equivalent to GET /a/b/2
 
 // try it:

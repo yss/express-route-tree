@@ -26,7 +26,7 @@ describe('express-route-tree', function() {
                     path: '/test/1/a'
                 },
                 alias: {
-                    test: 'app.list',
+                    test: '/app/list',
                     'a.b': 'app.list'
                 },
                 res: {
@@ -43,7 +43,7 @@ describe('express-route-tree', function() {
                     path: '/a/b/1/a'
                 },
                 alias: {
-                    'a.b': 'app.list'
+                    'a/b': 'app.list'
                 },
                 res: {
                     send: function(str) {

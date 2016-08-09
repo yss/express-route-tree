@@ -29,15 +29,17 @@ function addAlias(alias, controller) {
 
     Object.keys(alias).forEach(function(key) {
         var fn = controller;
-        alias[key].split('.').forEach(function(method) {
-            fn = fn[method];
+        alias[key].split(/[\.\/]/).forEach(function(method) {
+            if (method) {
+                fn = fn[method];
+            }
         });
         if (typeof fn !== 'function' && typeof fn !== 'object') {
             throw new Error('Alias value must be a function or object.');
         }
 
         var aliasController = controller,
-            keyArr = key.split('.');
+            keyArr = key.split(/[\.\/]/);
 
         key = keyArr.pop();
 
